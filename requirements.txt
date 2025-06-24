@@ -10,4 +10,10 @@ reportlab
 razorpay
 flask_mail
 werkzeug
-PI
+PIL
+flask_mail
+ultralytics
+werkzeug
+xhtml2pdf
+datetime
+base64
