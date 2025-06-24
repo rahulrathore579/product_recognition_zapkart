@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Recognition - ZapKart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #fff8f0;
+      color: #333;
+    }
+    .brand {
+      color: #ff6f00;
+      font-weight: 700;
+      font-size: 28px;
+    }
+    .video-container {
+      position: relative;
+      max-width: 720px;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(255, 111, 0, 0.3);
+      background: #fff;
+    }
+    video {
+      width: 100%;
+      border-radius: 12px 12px 0 0;
+    }
+    .controls {
+      background: #ff6f00;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      border-radius: 0 0 12px 12px;
+    }
+    .detected-items {
+      max-width: 720px;
+      margin: 20px auto;
+    }
+    .item-card {
+      background: #fff3e0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(255, 111, 0, 0.15);
+      display: flex;
+      align-items: center;
+    }
+    .item-card img {
+      max-width: 80px;
+      max-height: 80px;
+      object-fit: contain;
+      margin-right: 15px;
+      border-radius: 6px;
+      border: 1px solid #ffb74d;
+      background: #fff;
+    }
+    .item-details {
+      flex-grow: 1;
+    }
+    .item-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #bf360c;
+    }
+    .item-price {
+      color: #ff6f00;
+      font-weight: 500;
+    }
+    .btn-add-cart {
+      background-color: #bf360c;
+      border: none;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+    .btn-add-cart:hover {
+      background-color: #ff6f00;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+      <a class="navbar-brand brand" href="/">ZapKart</a>
+      <div>
+        <a href="/cart" class="btn btn-outline-warning">View Cart</a>
+        <a href="/logout" class="btn btn-outline-danger ms-2">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="video-container">
+    <video id="webcam" autoplay muted playsinline></video>
+    <div class="controls">
+      <button id="startBtn" class="btn btn-light me-2">Start Detection</button>
+      <button id="stopBtn" class="btn btn-light" disabled>Stop Detection</button>
+    </div>
+  </div>
+
+  <div class="container detected-items" id="detectedItems">
+    <h4>Detected Products</h4>
+    <div id="itemsList">
+      <!-- Detected items will appear here -->
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('webcam');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const itemsList = document.getElementById('itemsList');
+
+    let stream = null;
+    let detectionInterval = null;
+
+    async function startWebcam() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = stream;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        startDetection();
+      } catch (err) {
+        alert('Could not access webcam: ' + err);
+      }
+    }
+
+    function stopWebcam() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      video.srcObject = null;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      clearInterval(detectionInterval);
+    }
+
+    function startDetection() {
+      detectionInterval = setInterval(() => {
+        captureFrameAndDetect();
+      }, 3000); // every 3 seconds
+    }
+
+    async function captureFrameAndDetect() {
+      if (!video.videoWidth || !video.videoHeight) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataUrl = canvas.toDataURL('image/jpeg');
+
+      // Send to server for detection
+      try {
+        const response = await fetch('/detect', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ image: dataUrl })
+        });
+        if (!response.ok) throw new Error('Detection failed');
+
+        const data = await response.json();
+        updateDetectedItems(data.detected_items);
+      } catch (error) {
+        console.error('Error detecting:', error);
+      }
+    }
+
+    function updateDetectedItems(items) {
+      itemsList.innerHTML = '';
+      if (items.length === 0) {
+        itemsList.innerHTML = '<p>No products detected yet.</p>';
+        return;
+      }
+
+      items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item-card';
+
+        itemDiv.innerHTML = `
+          <img src="/static/images/${item.image}" alt="${item.name}" />
+          <div class="item-details">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">₹${item.price}</div>
+          </div>
+          <button class="btn-add-cart" onclick="addToCart('${item.id}')">Add to Cart</button>
+        `;
+
+        itemsList.appendChild(itemDiv);
+      });
+    }
+
+    async function addToCart(productId) {
+      try {
+        const response = await fetch('/add_to_cart', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ product_id: productId })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert('Product added to cart!');
+        } else {
+          alert('Failed to add product to cart.');
+        }
+      } catch {
+        alert('Error adding to cart.');
+      }
+    }
+
+    startBtn.addEventListener('click', startWebcam);
+    stopBtn.addEventListener('click', stopWebcam);
+  </script>
+
+</body>
+</html>
