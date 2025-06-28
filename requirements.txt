@@ -16,4 +16,4 @@ ultralytics
 werkzeug
 xhtml2pdf
 datetime
-base64
+
