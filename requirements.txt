@@ -10,7 +10,7 @@ reportlab
 razorpay
 flask_mail
 werkzeug
-PIL
+Pillow
 flask_mail
 ultralytics
 werkzeug
