@@ -243,7 +243,7 @@ def add_barcode():
     return jsonify({'status': 'error', 'message': 'Product not found'}), 404
 
 
-@app.route('/payment_success', methods=['POST'])
+@app.route('/payment_success', methods=['GET','POST'])
 @login_required
 def payment_success():
     user_email = current_user.email
