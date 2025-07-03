@@ -10,4 +10,7 @@ reportlab
 razorpay
 flask_mail
 werkzeug
-PI
+gunicorn
+ultralytics
+xhtml2pdf
+PIL
