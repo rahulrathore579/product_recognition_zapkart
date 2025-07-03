@@ -243,7 +243,7 @@ def add_barcode():
     return jsonify({'status': 'error', 'message': 'Product not found'}), 404
 
 
-@app.route('/payment/success', methods=['POST'])
+@app.route('/payment_success', methods=['POST'])
 @login_required
 def payment_success():
     user_email = current_user.email
@@ -253,7 +253,7 @@ def payment_success():
     for item in cart:
         message += f"{item['name']} x {item['quantity']} = ₹{item['price'] * item['quantity']}\n"
     message += f"\nTotal: ₹{total}"
-    msg = Message("Desh Cart - Order Confirmation", sender="your_email@gmail.com", recipients=[user_email])
+    msg = Message("Desh Cart - Order Confirmation", sender="rahulrathore39769@gmail.com", recipients=[user_email])
     msg.body = message
     mail.send(msg)
     session['cart'] = []
