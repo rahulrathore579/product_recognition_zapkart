@@ -45,7 +45,7 @@ model.conf = 0.5
 
 # Sample product catalog
 product_info ={
-    'apple': {'name': 'Apple', 'price': 30, 'image': 'apple.jpeg', 'category': 'Fruits'},
+    'apple': {'name': 'Apple', 'price': 30, 'image': 'apple.jpeg', 'category': 'Fruits','barcode': '8901234567890'},
     'banana': {'name': 'Banana', 'price': 10, 'image': 'banana.jpeg', 'category': 'Fruits'},
     'bread': {'name': 'Bread', 'price': 40, 'image': 'bread.jpeg', 'category': 'Bakery'},
     'lays': {'name': 'lays', 'price': 20, 'image': 'lays.jpeg', 'category': 'grocery'},
@@ -212,6 +212,36 @@ def pay():
                            razorpay_order_id=razorpay_order['id'],
                            razorpay_key=app.config['RAZORPAY_KEY_ID'],
                            user=current_user)
+
+@app.route('/scan', methods=['GET', 'POST'])
+@login_required
+def scan():
+    return render_template('scan.html')
+
+@app.route('/add_barcode', methods=['POST'])
+def add_barcode():
+    data = request.get_json()
+    code = data.get('barcode')
+    cart = session.get('cart', [])
+
+    for key, item in product_info.items():
+        if item.get('barcode') == code:
+            for c in cart:
+                if c['name'] == item['name']:
+                    c['quantity'] += 1
+                    break
+            else:
+                cart.append({
+                    'name': item['name'],
+                    'price': item['price'],
+                    'image': item['image'],
+                    'quantity': 1
+                })
+            session['cart'] = cart
+            return jsonify({'status': 'success', 'item': item})
+
+    return jsonify({'status': 'error', 'message': 'Product not found'}), 404
+
 
 @app.route('/payment/success', methods=['POST'])
 @login_required
