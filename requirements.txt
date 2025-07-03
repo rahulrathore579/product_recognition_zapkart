@@ -1,0 +1,13 @@
+flask
+flask_sqlalchemy
+flask_login
+torch
+torchvision
+opencv-python
+numpy
+pandas
+reportlab
+razorpay
+flask_mail
+werkzeug
+PI
