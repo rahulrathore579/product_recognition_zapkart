@@ -13,4 +13,4 @@ werkzeug
 gunicorn
 ultralytics
 xhtml2pdf
-PIL
+
