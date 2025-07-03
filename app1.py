@@ -257,7 +257,7 @@ def payment_success():
     msg.body = message
     mail.send(msg)
     session['cart'] = []
-    return render_template('payment_success.html')
+    return render_template('payment_success.html', cart=session.get('cart', []))
 
 @app.route('/search')
 def search():
