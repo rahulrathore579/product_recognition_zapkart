@@ -1,25 +1,252 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Recognize Products | Desh Cart</title>
+  <meta charset="UTF-8">
+  <title>Scan Product - ZapKart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #ff6f00;
+      --secondary-color: #28a745;
+      --light-bg: #f8f9fa;
+      --dark-text: #343a40;
+      --light-text: #6c757d;
+      --white: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --hover-shadow: rgba(0,0,0,0.2);
+    }
+
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-text);
+      line-height: 1.6;
+    }
+
+    /* --- Navbar --- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--white) !important;
+      box-shadow: 0 2px 10px var(--shadow);
+      min-height: 80px;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 2rem;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      color: #e06000 !important;
+    }
+
+    .nav-item {
+      margin: 0 10px;
+      font-weight: 600;
+    }
+
+    .nav-link {
+      color: var(--dark-text) !important;
+      padding: 8px 15px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background-color: #e0ffb3;
+      color: var(--secondary-color) !important;
+      font-size: 1.05rem;
+    }
+
+    .nav-item .nav-link.active {
+        background-color: var(--secondary-color);
+        color: var(--white) !important;
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    /* --- Page Specific Styles --- */
+    .scan-container {
+      margin-top: 60px; /* Aligned with other page content sections */
+      margin-bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--dark-text);
+      margin-bottom: 3rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    .video-feed-box {
+      background-color: var(--white);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 25px var(--shadow);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: fit-content; /* Adjusts to content size */
+      max-width: 100%; /* Ensures responsiveness */
+    }
+
     video, img {
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      max-width: 100%;
+      border: none; /* Remove default border as box has one */
+      border-radius: 10px; /* Slightly less rounded than box for inner content */
+      width: 100%; /* Fill container width */
+      height: auto; /* Maintain aspect ratio */
+      display: block; /* Remove extra space below img/video */
+    }
+
+    .btn-secondary-custom { /* Custom class for secondary button style */
+      background-color: var(--light-text);
+      border-color: var(--light-text);
+      color: var(--white);
+      font-weight: 600;
+      padding: 12px 30px;
+      border-radius: 50px; /* Pill-shaped */
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-secondary-custom:hover {
+      background-color: #5a6268;
+      border-color: #5a6268;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    }
+
+    .video-bg {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      opacity: 0.05;
+      z-index: -1;
+      object-fit: cover;
+      playsinline; /* Added for mobile compatibility */
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .navbar-collapse {
+        background-color: var(--white);
+        border-top: 1px solid #eee;
+        padding: 15px;
+      }
+      .nav-item {
+        margin: 5px 0;
+      }
+      .navbar-nav .nav-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .scan-container {
+        margin-top: 30px;
+      }
+      h2 {
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+      }
+      .video-feed-box {
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      h2 {
+        font-size: 1.8rem;
+      }
+      .btn-secondary-custom {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container mt-4">
-    <h2 class="text-center">Real-Time Product Recognition</h2>
-    <div class="text-center">
-      <img src="{{ url_for('video_feed') }}" width="720" height="480">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">ZapKart</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="/cart">My Cart</a></li>
+            <li class="nav-item"><a class="nav-link" href="/scan">Scan Product</a></li>
+            <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
+          {% endif %}
+          <li class="nav-item">
+            <form class="d-flex ms-lg-3" action="/search" method="get">
+              <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="text-center mt-3">
-      <a href="/" class="btn btn-secondary">Back to Home</a>
+  </nav>
+
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="/static/zapkart_logo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="container scan-container">
+    <h2>Real-Time Product Recognition</h2>
+    <div class="video-feed-box">
+      <img src="{{ url_for('video_feed') }}" alt="Product Recognition Feed">
+    </div>
+    <div class="mt-4">
+      <a href="/" class="btn btn-secondary-custom">Back to Home</a>
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
