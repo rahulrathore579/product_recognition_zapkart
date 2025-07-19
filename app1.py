@@ -30,7 +30,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'rahulrathore39769@gmail.com'
-app.config['MAIL_PASSWORD'] = 'kecmfzhhlllnfizw'
+app.config['MAIL_PASSWORD'] = 'lbcfyfczqdukbkoy'
 mail = Mail(app)
 
 # Init extensions
@@ -243,41 +243,19 @@ def add_barcode():
     return jsonify({'status': 'error', 'message': 'Product not found'}), 404
 
 
-@app.route('/payment_success', methods=['GET', 'POST'])
+@app.route('/payment_success', methods=['POST'])
 @login_required
 def payment_success():
     user_email = current_user.email
     cart = session.get('cart', [])
     total = sum(item['price'] * item['quantity'] for item in cart)
-
-    # Build email message
-    message_text = f"Thank you for your purchase!\n\nOrder Summary:\n"
+    message = f"Thank you for your purchase!\n\nOrder Summary:\n"
     for item in cart:
-        message_text += f"{item['name']} x {item['quantity']} = ₹{item['price'] * item['quantity']}\n"
-    message_text += f"\nTotal: ₹{total}"
-
-    # Render HTML for the bill
-    rendered_html = render_template('bill.html', cart=cart, now=datetime.now)
-
-    # Generate PDF
-    pdf_buffer = io.BytesIO()
-    pisa_status = pisa.CreatePDF(io.StringIO(rendered_html), dest=pdf_buffer)
-
-    if pisa_status.err:
-        flash("Could not generate PDF bill.", "danger")
-
-    # Create email
+        message += f"{item['name']} x {item['quantity']} = ₹{item['price'] * item['quantity']}\n"
+    message += f"\nTotal: ₹{total}"
     msg = Message("Desh Cart - Order Confirmation", sender="rahulrathore39769@gmail.com", recipients=[user_email])
-    msg.body = message_text
-
-    # Attach PDF
-    pdf_buffer.seek(0)
-    msg.attach("ZapKart_Bill.pdf", "application/pdf", pdf_buffer.read())
-
-    # Send email
+    msg.body = message
     mail.send(msg)
-
-    # Clear cart after payment
     session['cart'] = []
     return render_template('payment_success.html')
 
