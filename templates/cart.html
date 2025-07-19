@@ -2,181 +2,464 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Cart - Desh Cart</title>
+  <title>My Cart - ZapKart</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Segoe UI', sans-serif;
+    :root {
+      --primary-color: #ff6f00;
+      --secondary-color: #28a745;
+      --light-bg: #f8f9fa;
+      --dark-text: #343a40;
+      --light-text: #6c757d;
+      --white: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --hover-shadow: rgba(0,0,0,0.2);
     }
 
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-text);
+      line-height: 1.6;
+    }
+
+    /* --- Navbar --- */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 0.75rem 1rem;
-      background-color: white !important;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--white) !important;
+      box-shadow: 0 2px 10px var(--shadow);
+      min-height: 80px;
     }
 
     .navbar-brand {
-      font-weight: bold;
-      color: #ff6f00 !important;
-      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 2rem;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      color: #e06000 !important;
+    }
+
+    .nav-item {
+      margin: 0 10px;
+      font-weight: 600;
+    }
+
+    .nav-link {
+      color: var(--dark-text) !important;
+      padding: 8px 15px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background-color: #e0ffb3;
+      color: var(--secondary-color) !important;
+      font-size: 1.05rem;
+    }
+
+    .nav-item .nav-link.active {
+        background-color: var(--secondary-color);
+        color: var(--white) !important;
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    /* --- Page Specific Styles --- */
+    h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--dark-text);
+      margin-bottom: 3rem; /* More space below headings */
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
     }
 
     .cart-container {
-      margin-top: 180px;
+      margin-top: 60px; /* Reduced margin to be closer to navbar */
       margin-bottom: 80px;
     }
 
+    .cart-box {
+      background-color: var(--white);
+      border-radius: 15px; /* More rounded corners */
+      padding: 30px; /* More padding */
+      box-shadow: 0 8px 25px var(--shadow); /* Stronger, softer shadow */
+    }
+
+    .table {
+      margin-bottom: 30px; /* Space below table */
+    }
+
+    .table th, .table td {
+      vertical-align: middle; /* Center content vertically */
+      padding: 15px; /* More padding in table cells */
+      font-size: 1.05rem; /* Slightly larger text in table */
+    }
+
+    .table thead th {
+      background-color: #e9ecef; /* Lighter header background */
+      color: var(--dark-text);
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6; /* Clearer separator */
+    }
+
     .cart-item img {
-      width: 60px;
-      height: 60px;
+      width: 80px; /* Larger image size */
+      height: 80px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 10px; /* Slightly more rounded image corners */
+      margin-right: 15px; /* More space */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for images */
     }
 
     .cart-summary {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.4rem; /* Larger font for summary */
+      font-weight: 700;
+      color: var(--dark-text);
     }
 
-    .btn-sm {
-      padding: 0.25rem 0.5rem;
+    /* Action Buttons (Quantity/Delete) */
+    .action-buttons .btn {
+      margin: 0 4px 0 0; /* Adjusted margins */
+      padding: 0.4rem 0.8rem; /* Slightly larger small buttons */
+      border-radius: 8px; /* Slightly rounded for these buttons */
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+
+    .action-buttons .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-sm.btn-success {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    .btn-sm.btn-success:hover {
+      background-color: #218838;
+      border-color: #218838;
+    }
+
+    .btn-sm.btn-warning {
+      background-color: #ffc107;
+      border-color: #ffc107;
+      color: var(--dark-text); /* Ensure good contrast */
+    }
+    .btn-sm.btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #e0a800;
+    }
+
+    .btn-sm.btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+    .btn-sm.btn-danger:hover {
+      background-color: #c82333;
+      border-color: #c82333;
+    }
+
+
+    /* Main Cart Action Buttons (Proceed to Pay, Download, Print) */
+    .checkout-buttons .btn {
+      font-size: 1.1rem;
+      padding: 12px 25px;
+      border-radius: 50px; /* Pill-shaped */
+      font-weight: 600;
+      margin-left: 15px; /* Spacing between buttons */
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .checkout-buttons .btn:first-child {
+      margin-left: 0; /* No left margin for the first button */
+    }
+
+    .checkout-buttons .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: var(--white);
+    }
+    .btn-primary:hover {
+      background-color: #e06000;
+      border-color: #e06000;
+    }
+
+    .btn-secondary {
+      background-color: var(--light-text);
+      border-color: var(--light-text);
+      color: var(--white);
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #5a6268;
+    }
+
+    .btn-success { /* For Print Bill */
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+      color: var(--white);
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #218838;
     }
 
     .video-bg {
-      position: fixed;
+      position: fixed; /* Changed to fixed for constant background */
       left: 50%;
-      top: 70px;
-      transform: translateX(-50%);
-      width: 300px;
-      opacity: 0.1;
+      top: 50%; /* Center vertically */
+      transform: translate(-50%, -50%); /* Center precisely */
+      min-width: 100%; /* Ensure full coverage */
+      min-height: 100%;
+      width: auto; /* Allow auto width/height for aspect ratio */
+      height: auto;
+      opacity: 0.05; /* More subtle opacity */
       z-index: -1;
-    }
-
-    .cart-box {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .action-buttons .btn {
-      margin: 0 4px 6px 0;
+      object-fit: cover; /* Ensure video covers the area without distortion */
     }
 
     .empty-cart {
-      font-size: 1.2rem;
-      color: #666;
-      margin-top: 100px;
+      font-size: 1.5rem; /* Larger font for empty cart message */
+      color: var(--light-text);
+      margin-top: 80px;
+      padding: 40px;
+      background-color: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .navbar-collapse {
+        background-color: var(--white);
+        border-top: 1px solid #eee;
+        padding: 15px;
+      }
+      .nav-item {
+        margin: 5px 0;
+      }
+      .navbar-nav .nav-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+      }
     }
 
     @media (max-width: 768px) {
       .cart-container {
-        margin-top: 120px;
+        margin-top: 30px;
+      }
+      h2 {
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+      }
+      .table th, .table td {
+        padding: 10px;
+        font-size: 0.95rem;
+      }
+      .cart-item img {
+        width: 60px;
+        height: 60px;
+      }
+      .cart-summary {
+        font-size: 1.2rem;
+      }
+      .action-buttons .btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.85rem;
+      }
+      .checkout-buttons .btn {
+        display: block; /* Stack buttons on small screens */
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+        font-size: 1rem;
+        padding: 10px 20px;
+      }
+      .checkout-buttons .btn:first-child {
+          margin-top: 0;
       }
     }
-    .nav-item{
-    font-weight: bold;
-    border:2px;
-    border-color: black;
-    margin: 5px;
-    hei
 
-    }
-    .nav-item:hover{
-    font-weight: bold;
-    font-size: 20px;
-    background-color: #a9e012;
-    border-radius: 25px;
-    margin: 5px;
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 1.5rem;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .cart-box {
+        padding: 15px;
+      }
+      .table thead {
+        display: none; /* Hide table header on very small screens */
+      }
+      .table, .table tbody, .table tr, .table td {
+        display: block; /* Make table responsive by stacking cells */
+        width: 100%;
+      }
+      .table tr {
+        margin-bottom: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .table td {
+        text-align: right !important;
+        padding-left: 50%;
+        position: relative;
+      }
+      .table td::before {
+        content: attr(data-label); /* Use data-label for pseudo-elements */
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: 600;
+        text-align: left;
+      }
+      /* Specific content for before pseudo-elements */
+      .table td:nth-of-type(1)::before { content: "Product:"; }
+      .table td:nth-of-type(2)::before { content: "Price:"; }
+      .table td:nth-of-type(3)::before { content: "Quantity:"; }
+      .table td:nth-of-type(4)::before { content: "Total:"; }
+      .table td:nth-of-type(5)::before { content: "Action:"; }
+
+      .cart-summary {
+        font-size: 1.1rem;
+        text-align: right !important;
+        padding-right: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-  <div class="container">
-    <h1><a class="navbar-brand" href="/" style="margin-left: 20px">ZapKart</a></h1>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        {% if current_user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link" href="/cart">My Cart</a></li>
-          <li class="nav-item"><a class="nav-link" href="/scan">Scan Product</a></li>
-          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-        {% else %}
-          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
-        {% endif %}
-        <li class="nav-item">
-          <form class="d-flex" action="/search" method="get">
-            <input class="form-control me-2" type="search" name="q" placeholder="Search">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-          </form>
-        </li>
-      </ul>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="/">ZapKart</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="/cart">My Cart</a></li>
+            <li class="nav-item"><a class="nav-link" href="/scan">Scan Product</a></li>
+            <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
+          {% endif %}
+          <li class="nav-item">
+            <form class="d-flex ms-lg-3" action="/search" method="get">
+              <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
-  <video class="video-bg" autoplay muted loop>
+  </nav>
+
+  <video class="video-bg" autoplay muted loop playsinline>
     <source src="/static/zapkart_logo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
   </video>
 
   <div class="container cart-container">
     <h2 class="text-center mb-4">My Shopping Cart</h2>
     {% if cart and cart|length > 0 %}
-    <table class="table table-bordered bg-white" >
-      <thead class="table-light">
-        <tr>
-          <th>Product</th>
-          <th>Price (₹)</th>
-          <th>Quantity</th>
-          <th>Total (₹)</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% set grand_total = 0 %}
-        {% for item in cart %}
-          {% set total = item.price * item.quantity %}
-          {% set grand_total = grand_total + total %}
-        <tr class="cart-item">
-          <td>
-            <img src="/static/{{ item.image }}" alt="{{ item.name }}" class="me-2">
-            {{ item.name }}
-          </td>
-          <td>{{ item.price }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ total }}</td>
-          <td>
-            <form method="POST" action="/update_cart" class="d-inline">
-              <input type="hidden" name="name" value="{{ item.name }}">
-              <button type="submit" name="action" value="increase" class="btn btn-sm btn-success">+</button>
-              <button type="submit" name="action" value="decrease" class="btn btn-sm btn-warning">-</button>
-              <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-        <tr>
-          <td colspan="3" class="text-end cart-summary">Grand Total:</td>
-          <td colspan="2" class="cart-summary">₹{{ grand_total }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="text-end">
-      <a href="/pay" class="btn btn-primary">Proceed to Pay</a>
-      <a href="/bill" class="btn btn-secondary">Download Bill</a>
-      <a href="/bill" target="_blank" class="btn btn-success">🖨️ Print Bill</a>
-    </div>
+    <div class="cart-box">
+        <div class="table-responsive"> {# Added responsive wrapper for table #}
+            <table class="table table-borderless"> {# Changed to table-borderless for cleaner look #}
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th>Price (₹)</th>
+                  <th>Quantity</th>
+                  <th>Total (₹)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% set grand_total = 0 %}
+                {% for item in cart %}
+                  {% set total = item.price * item.quantity %}
+                  {% set grand_total = grand_total + total %}
+                <tr class="cart-item">
+                  <td data-label="Product:">
+                    <div class="d-flex align-items-center">
+                      <img src="/static/{{ item.image }}" alt="{{ item.name }}" class="me-2">
+                      <span>{{ item.name }}</span>
+                    </div>
+                  </td>
+                  <td data-label="Price:">₹{{ item.price }}</td>
+                  <td data-label="Quantity:">{{ item.quantity }}</td>
+                  <td data-label="Total:">₹{{ total }}</td>
+                  <td data-label="Action:" class="action-buttons">
+                    <form method="POST" action="/update_cart" class="d-inline-flex flex-wrap align-items-center">
+                      <input type="hidden" name="name" value="{{ item.name }}">
+                      <button type="submit" name="action" value="increase" class="btn btn-sm btn-success">+</button>
+                      <button type="submit" name="action" value="decrease" class="btn btn-sm btn-warning">-</button>
+                      <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                  <td colspan="3" class="text-end cart-summary">Grand Total:</td>
+                  <td colspan="2" class="cart-summary">₹{{ grand_total }}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div> {# End table-responsive #}
+
+        <div class="text-end checkout-buttons">
+          <a href="/pay" class="btn btn-primary">Proceed to Pay</a>
+          <a href="/bill" class="btn btn-secondary">Download Bill</a>
+          <a href="/bill" target="_blank" class="btn btn-success">🖨️ Print Bill</a>
+        </div>
+    </div> {# End cart-box #}
 
     {% else %}
-      <p class="text-center">Your cart is empty. Start shopping now!</p>
+      <p class="text-center empty-cart">Your cart is empty. Start shopping now!</p>
     {% endif %}
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
