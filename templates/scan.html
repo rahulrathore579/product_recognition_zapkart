@@ -5,90 +5,266 @@
   <title>Scan Product - ZapKart</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@ericblade/quagga2@1.2.6/dist/quagga.min.js"></script>
   <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Segoe UI', sans-serif;
+    :root {
+      --primary-color: #ff6f00;
+      --secondary-color: #28a745;
+      --light-bg: #f8f9fa;
+      --dark-text: #343a40;
+      --light-text: #6c757d;
+      --white: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --hover-shadow: rgba(0,0,0,0.2);
     }
 
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-text);
+      line-height: 1.6;
+    }
+
+    /* --- Navbar --- */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 1030;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--white);
+      box-shadow: 0 2px 10px var(--shadow);
+      min-height: 80px;
     }
 
     .navbar-brand {
-      font-weight: bold;
-      color: #ff6f00 !important;
-      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-color) !important;
+      font-size: 2rem;
+      transition: color 0.3s ease;
     }
 
-    .scanner-container {
-      max-width: 700px;
-      margin: 60px auto;
-      text-align: center;
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .navbar-brand:hover {
+      color: #e06000 !important;
     }
 
-    #barcode-scanner {
-      border: 2px solid #dee2e6;
-      border-radius: 10px;
-
-      width: 100%;
-      height: 100px;
-      transition: height 0.5s ease;
-      overflow: hidden;
-    }
-
-    video, canvas {
-      margin-top: 15px;
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      border: 2px solid #dee2e6;
-    }
-
-    canvas { display: none; }
-
-    .section-title {
-      margin-top: 30px;
-      font-size: 1.4rem;
+    .nav-item {
+      margin: 0 10px;
       font-weight: 600;
     }
 
-    .btn-scan {
-      width: 80%;
-      max-width: 300px;
+    .nav-link {
+      color: var(--dark-text) !important;
+      padding: 8px 15px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
     }
-    .nav-item{
-    font-weight: bold;
-    border:2px;
-    border-color: black;
-    margin: 5px;
-    hei
 
+    .nav-link:hover {
+      background-color: #e0ffb3;
+      color: var(--secondary-color) !important;
+      font-size: 1.05rem;
     }
-    .nav-item:hover{
-    font-weight: bold;
-    font-size: 20px;
-    background-color: #638fd6;
-    border-radius: 25px;
-    margin: 5px;
+
+    .nav-item .nav-link.active {
+        background-color: var(--secondary-color);
+        color: var(--white) !important;
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    /* --- Scanner Container --- */
+    .scanner-container {
+      max-width: 750px; /* Slightly wider for better video display */
+      margin: 60px auto;
+      text-align: center;
+      background: var(--white);
+      padding: 40px; /* More padding */
+      border-radius: 20px; /* More rounded corners */
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--dark-text);
+      margin-bottom: 3rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    .section-title {
+      margin-top: 40px; /* More space above titles */
+      margin-bottom: 20px;
+      font-size: 1.8rem; /* Larger font size */
+      font-weight: 600;
+      color: var(--primary-color); /* Highlight section titles */
+    }
+
+    /* Barcode Input */
+    #barcodeInput {
+      border: 2px solid #ced4da;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 1.1rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #barcodeInput:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.25rem rgba(255, 111, 0, 0.25);
+    }
+
+    /* Barcode Scanner (QuaggaJS) Container */
+    #barcode-scanner {
+      border: 2px dashed var(--secondary-color); /* Dashed border for scanner area */
+      border-radius: 15px;
+      width: 100%;
+      height: 250px; /* Increased initial height for a better scanning area */
+      transition: height 0.5s ease;
+      overflow: hidden;
+      background-color: #f0fff0; /* Light green background */
+      display: flex; /* Center content */
+      justify-content: center;
+      align-items: center;
+      color: var(--light-text);
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #barcode-scanner video, #barcode-scanner canvas {
+      border: none; /* Remove individual border for video/canvas inside scanner */
+      margin-top: 0; /* Remove top margin */
+      object-fit: contain; /* Ensure video fits within the scanner area */
+    }
+
+    /* Webcam Video & Canvas */
+    video, canvas {
+      margin-top: 25px; /* More spacing */
+      width: 100%;
+      height: auto;
+      min-height: 250px; /* Ensure a minimum height for video */
+      border-radius: 15px;
+      border: 3px solid var(--dark-text); /* Stronger border for clarity */
+      background-color: #000; /* Black background for video */
+    }
+
+    canvas {
+      display: none; /* Hidden by default */
+      border-color: var(--secondary-color); /* Different border color for canvas if shown */
+    }
+
+    /* Buttons */
+    .btn-scan {
+      width: 90%; /* Wider buttons */
+      max-width: 350px; /* Max width for larger screens */
+      padding: 15px 0; /* Larger padding */
+      font-size: 1.2rem; /* Larger font size */
+      font-weight: 600;
+      border-radius: 50px; /* Pill-shaped buttons */
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .btn-scan:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    }
+
+    .btn-dark {
+      background-color: var(--dark-text);
+      border-color: var(--dark-text);
+      color: var(--white);
+    }
+
+    .btn-dark:hover {
+      background-color: #212529;
+      border-color: #212529;
+    }
+
+    .btn-success {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+      color: var(--white);
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #218838;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .scanner-container {
+        margin: 30px auto;
+        padding: 25px;
+        border-radius: 15px;
+      }
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        margin-top: 30px;
+      }
+      .btn-scan {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 12px 0;
+      }
+      #barcode-scanner {
+        height: 200px; /* Adjust height for smaller screens */
+      }
+      video, canvas {
+        min-height: 200px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 1.5rem;
+      }
+      .scanner-container {
+        padding: 20px;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .section-title {
+        font-size: 1.3rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
       <a class="navbar-brand" href="/">ZapKart</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -102,8 +278,8 @@
             <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
           {% endif %}
           <li class="nav-item">
-            <form class="d-flex" action="/search" method="get">
-              <input class="form-control me-2" type="search" name="q" placeholder="Search">
+            <form class="d-flex ms-lg-3" action="/search" method="get">
+              <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-primary" type="submit">Search</button>
             </form>
           </li>
@@ -112,27 +288,26 @@
     </div>
   </nav>
 
-  <!-- Scan Product Section -->
   <div class="scanner-container">
     <h2 class="mb-4">Scan Product</h2>
 
-    <!-- Barcode Text Input -->
     <div class="section-title">Scan by Barcode</div>
     <input type="text" id="barcodeInput" autofocus class="form-control mt-2 mb-3" placeholder="Scan barcode here (physical scanner)...">
 
-    <!-- Barcode Camera -->
-    <div id="barcode-scanner" ></div>
+    <div id="barcode-scanner">
+      <p>Click "Start Barcode Scanner" to activate camera.</p>
+    </div>
     <button onclick="startBarcodeScanner()" class="btn btn-dark mt-3 btn-scan">Start Barcode Scanner (Camera)</button>
 
-    <!-- Webcam Detection -->
     <div class="section-title">Scan by Webcam Recognition</div>
-    <video id="video" autoplay></video>
+    <video id="video" autoplay playsinline></video>
     <canvas id="canvas" width="640" height="480"></canvas>
     <button onclick="captureImage()" class="btn btn-success mt-3 btn-scan">Recognize Product (YOLO)</button>
   </div>
 
-  <!-- JS Logic -->
   <script>
+    let quaggaInitialized = false; // Flag to prevent multiple initializations
+
     // Barcode from keyboard
     document.getElementById("barcodeInput").addEventListener("change", function(e) {
       const code = e.target.value.trim();
@@ -150,60 +325,143 @@
           } else {
             alert(data.message);
           }
+        })
+        .catch(error => {
+          console.error('Error adding barcode product:', error);
+          alert('Failed to add product. Please try again.');
         });
       }
-      e.target.value = '';
+      e.target.value = ''; // Clear input after scan attempt
     });
 
-    // Barcode Scanner with Camera
+    // Barcode Scanner with Camera (QuaggaJS)
     function startBarcodeScanner() {
+      if (quaggaInitialized) {
+        console.log("QuaggaJS already initialized.");
+        return; // Prevent re-initialization
+      }
+
       const scannerDiv = document.getElementById("barcode-scanner");
-      scannerDiv.style.height = "100px";  // Set height to 100px on start
+      scannerDiv.innerHTML = ''; // Clear initial text
 
       Quagga.init({
         inputStream: {
           name: "Live",
           type: "LiveStream",
-          target: scannerDiv
+          target: scannerDiv,
+          constraints: {
+            width: 640,
+            height: 480,
+            facingMode: "environment" // Prefer rear camera on mobile
+          },
         },
         decoder: {
-          readers: ["ean_reader", "code_128_reader"]
-        }
+          readers: ["ean_reader", "code_128_reader", "upc_reader", "ean_8_reader"] // Added more common barcode types
+        },
+        locator: {
+          patchSize: "medium",
+          halfSample: true
+        },
+        numOfWorkers: (navigator.hardwareConcurrency ? navigator.hardwareConcurrency : 4), // Use more workers if available
+        locate: true
       }, function(err) {
-        if (err) return console.error(err);
+        if (err) {
+          console.error("Error initializing Quagga:", err);
+          scannerDiv.innerHTML = '<p style="color: red;">Could not start barcode scanner. Please ensure camera access is granted.</p>';
+          return;
+        }
         Quagga.start();
+        quaggaInitialized = true;
       });
 
       Quagga.onDetected(data => {
         const code = data.codeResult.code;
-        fetch('/add_barcode', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ barcode: code })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'success') {
-            alert(`${data.item.name} added to cart!`);
-            window.location.href = '/cart';
-          } else {
-            alert(data.message);
+        if (code) {
+          console.log("Barcode detected:", code);
+          Quagga.stop(); // Stop scanner once a barcode is detected
+          quaggaInitialized = false; // Reset flag
+          fetch('/add_barcode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ barcode: code })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              alert(`${data.item.name} added to cart!`);
+              window.location.href = '/cart';
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error adding barcode product:', error);
+            alert('Failed to add product. Please try again.');
+          });
+        }
+      });
+
+      Quagga.onProcessed(result => {
+        const drawingCtx = Quagga.canvas.ctx.overlay;
+        const drawingCanvas = Quagga.canvas.dom.overlay;
+
+        if (result) {
+          if (result.boxes) {
+            drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+            result.boxes.filter(function (box) {
+              return box !== result.box;
+            }).forEach(function (box) {
+              Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
+            });
           }
-        });
-        Quagga.stop();
+
+          if (result.box) {
+            Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
+          }
+
+          if (result.codeResult && result.codeResult.code) {
+            Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: "red", lineWidth: 3 });
+          }
+        }
       });
     }
 
     // YOLO webcam detection
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; })
-      .catch(err => alert("Webcam access denied"));
+    let videoStream; // To store the stream for stopping later
+
+    // Request camera access only when needed or if the page implies it's required immediately
+    // For now, I'll keep it on page load as per your original code.
+    // Consider adding a "Start Recognition" button like the barcode scanner if privacy is a concern.
+    if (video) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                videoStream = stream; // Store the stream
+                video.play(); // Ensure video starts playing
+            })
+            .catch(err => {
+                console.error("Webcam access denied or not available:", err);
+                // Optionally display a message to the user on the page
+                alert("Webcam access denied. Please allow camera access to use product recognition.");
+            });
+    }
 
     function captureImage() {
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (!video.srcObject) {
+        alert("Webcam not active. Please ensure camera access is granted and try again.");
+        return;
+      }
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const dataURL = canvas.toDataURL('image/jpeg');
+
+      // Add a loading indicator or disable button during fetch
+      const recognizeButton = document.querySelector('.btn-success.btn-scan');
+      recognizeButton.textContent = 'Recognizing...';
+      recognizeButton.disabled = true;
+
       fetch('/detect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -212,13 +470,35 @@
       .then(res => res.json())
       .then(data => {
         if (data.detected_items && data.detected_items.length > 0) {
-          alert(`Detected: ${data.detected_items.map(i => i.name).join(', ')}`);
-          window.location.href = '/cart';
+          const itemNames = data.detected_items.map(i => i.name).join(', ');
+          alert(`Detected: ${itemNames}`);
+          // Consider redirecting to a specific product page or adding to cart directly
+          window.location.href = '/cart'; // Redirect to cart as per original logic
         } else {
-          alert('No product recognized.');
+          alert('No product recognized. Please try again.');
         }
+      })
+      .catch(error => {
+        console.error('Recognition failed:', error);
+        alert('Recognition failed. Please ensure the product is well-lit and in frame.');
+      })
+      .finally(() => {
+        // Re-enable button and reset text
+        recognizeButton.textContent = 'Recognize Product (YOLO)';
+        recognizeButton.disabled = false;
       });
     }
+
+    // Optional: Stop streams when navigating away to release camera resources
+    window.addEventListener('beforeunload', () => {
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+      }
+      if (quaggaInitialized) {
+        Quagga.stop();
+      }
+    });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
