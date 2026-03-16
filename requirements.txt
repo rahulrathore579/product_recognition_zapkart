@@ -13,4 +13,5 @@ werkzeug
 gunicorn
 ultralytics
 xhtml2pdf
+python-dotenv
 

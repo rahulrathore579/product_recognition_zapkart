@@ -7,30 +7,36 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from ultralytics import YOLO
+from sqlalchemy.exc import IntegrityError
+from dotenv import load_dotenv
 from models import db, User
 from xhtml2pdf import pisa
 from PIL import Image
 import razorpay
+import os
 import base64, io
 from datetime import datetime
 
 
+load_dotenv()
+
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'your_secret_key'
+app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
 
 # Razorpay API keys
-app.config['RAZORPAY_KEY_ID'] = 'rzp_test_k3pOA75T9AnyzT'
-app.config['RAZORPAY_KEY_SECRET'] = 'Kh4O5Y57Tq2G3LyTYDKA5SVt'
+app.config['RAZORPAY_KEY_ID'] = os.getenv('RAZORPAY_KEY_ID')
+app.config['RAZORPAY_KEY_SECRET'] = os.getenv('RAZORPAY_KEY_SECRET')
 razorpay_client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
 
 # Email config
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'rahulrathore39769@gmail.com'
-app.config['MAIL_PASSWORD'] = 'lbcfyfczqdukbkoy'
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', '587'))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() == 'true'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 mail = Mail(app)
 
 # Init extensions
@@ -40,7 +46,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Load YOLO model
-model = YOLO('my_model.pt')
+model = YOLO(os.getenv('YOLO_MODEL_PATH', 'my_model.pt'))
 model.conf = 0.5
 
 # Sample product catalog
@@ -123,10 +129,22 @@ def signup():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already registered. Please login or use another email.')
+            return redirect(url_for('signup'))
+
         hashed_password = generate_password_hash(password, method='scrypt')
         user = User(email=email, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('Email already registered. Please login or use another email.')
+            return redirect(url_for('signup'))
+
         login_user(user)
         return redirect(url_for('index'))
     return render_template('signup.html')
@@ -253,7 +271,7 @@ def payment_success():
     for item in cart:
         message += f"{item['name']} x {item['quantity']} = ₹{item['price'] * item['quantity']}\n"
     message += f"\nTotal: ₹{total}"
-    msg = Message("Desh Cart - Order Confirmation", sender="rahulrathore39769@gmail.com", recipients=[user_email])
+    msg = Message("Desh Cart - Order Confirmation", sender=app.config['MAIL_USERNAME'], recipients=[user_email])
     msg.body = message
     mail.send(msg)
     session['cart'] = []
