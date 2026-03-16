@@ -220,7 +220,7 @@ def bill():
 @login_required
 def pay():
     cart = session.get('cart', [])
-    total_amount = sum(item['price'] * item['quantity'] for item in cart) * 100
+    total_amount = int(sum(item['price'] * item['quantity'] for item in cart) * 100)
     razorpay_order = razorpay_client.order.create(dict(
         amount=total_amount,
         currency='INR',
